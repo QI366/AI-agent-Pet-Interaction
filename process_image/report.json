@@ -1,0 +1,206 @@
+{
+  "above.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      83,
+      148,
+      946,
+      867
+    ],
+    "centerX": 514,
+    "alphaCoverage": 0.6236,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 17687
+  },
+  "poodle_pose_yC00_pA45.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      85,
+      59,
+      946,
+      968
+    ],
+    "centerX": 515,
+    "alphaCoverage": 0.5395,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 16953
+  },
+  "poodle_pose_yC00_pB45.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      90,
+      38,
+      941,
+      1022
+    ],
+    "centerX": 515,
+    "alphaCoverage": 0.4597,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 16735
+  },
+  "poodle_pose_yC00_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      90,
+      38,
+      940,
+      1022
+    ],
+    "centerX": 515,
+    "alphaCoverage": 0.4738,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 33175
+  },
+  "poodle_pose_yL15_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      107,
+      39,
+      939,
+      1022
+    ],
+    "centerX": 523,
+    "alphaCoverage": 0.4735,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 18433
+  },
+  "poodle_pose_yL30_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      129,
+      38,
+      939,
+      1022
+    ],
+    "centerX": 534,
+    "alphaCoverage": 0.4722,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 16126
+  },
+  "poodle_pose_yL60_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      163,
+      1,
+      982,
+      1022
+    ],
+    "centerX": 572,
+    "alphaCoverage": 0.5028,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 19365
+  },
+  "poodle_pose_yL90_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      134,
+      40,
+      910,
+      1022
+    ],
+    "centerX": 522,
+    "alphaCoverage": 0.5165,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 15757
+  },
+  "poodle_pose_yR15_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      84,
+      39,
+      916,
+      1022
+    ],
+    "centerX": 500,
+    "alphaCoverage": 0.4735,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 18433
+  },
+  "poodle_pose_yR30_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      114,
+      38,
+      893,
+      1022
+    ],
+    "centerX": 503,
+    "alphaCoverage": 0.4851,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 16103
+  },
+  "poodle_pose_yR60_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      41,
+      1,
+      860,
+      1022
+    ],
+    "centerX": 450,
+    "alphaCoverage": 0.5028,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 19365
+  },
+  "poodle_pose_yR90_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      112,
+      41,
+      889,
+      1022
+    ],
+    "centerX": 500,
+    "alphaCoverage": 0.5161,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 15412
+  }
+}

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5efe9" />
+    <title>泰迪的日常</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">AI PET INTERACTION</p>
+          <h1>泰迪的日常</h1>
+        </div>
+        <div class="connection" id="connection" aria-live="polite">
+          <span class="status-dot"></span>素材载入中
+        </div>
+      </header>
+
+      <section class="game-layout" aria-label="宠物互动区">
+        <section class="stage-card">
+          <div class="stage-toolbar">
+            <label for="pose-select">视角</label>
+            <select id="pose-select" aria-label="选择狗狗视角"></select>
+            <label for="expression-select">表情</label>
+            <select id="expression-select" aria-label="选择狗狗表情"></select>
+            <button class="tool-button" id="layer-toggle" type="button" aria-pressed="false">分层预览</button>
+            <button class="icon-button" id="reset-button" type="button" title="恢复初始状态">↺</button>
+          </div>
+          <div class="stage" id="stage">
+            <div class="sparkles" id="sparkles" aria-hidden="true"></div>
+            <div class="speech" id="speech" role="status">嗨！今天也要一起玩呀。</div>
+            <img class="stage-prop" id="prop-image" alt="" aria-hidden="true" />
+            <div class="pet-wrap" id="pet-wrap">
+              <img id="pet-image" alt="一只巧克力色泰迪犬" draggable="false" />
+            </div>
+            <div class="layer-preview" id="layer-preview" aria-hidden="true">
+              <img data-layer="body" alt="" />
+              <img data-layer="head" alt="" />
+              <img data-layer="ear_l" alt="" />
+              <img data-layer="ear_r" alt="" />
+            </div>
+            <div class="shadow" aria-hidden="true"></div>
+            <div class="stage-hint">移动鼠标，让泰迪跟着你的视线</div>
+          </div>
+          <div class="mood-row">
+            <span id="mood-emoji" aria-hidden="true">😊</span>
+            <span id="mood-label">心情不错</span>
+            <span class="streak" id="streak-label">今日互动 0 次</span>
+          </div>
+        </section>
+
+        <aside class="side-panel" aria-label="宠物状态与操作">
+          <section class="panel-block">
+            <div class="panel-heading">
+              <h2>泰迪</h2>
+              <span class="level">Lv. 1</span>
+            </div>
+            <p class="subtitle">巧克力色 · 2 岁 · 爱撒娇</p>
+            <div class="stats" id="stats"></div>
+          </section>
+
+          <section class="panel-block actions-block">
+            <h2>和它互动</h2>
+            <div class="actions" id="actions">
+              <button class="action-button" data-action="pet" type="button"><span>🤎</span><strong>摸摸头</strong><small>增加心情</small></button>
+              <button class="action-button" data-action="feed" type="button"><span>🍖</span><strong>喂食</strong><small>恢复饥饿</small></button>
+              <button class="action-button" data-action="water" type="button"><span>💧</span><strong>喝水</strong><small>恢复活力</small></button>
+              <button class="action-button" data-action="play" type="button"><span>🎾</span><strong>玩玩具</strong><small>消耗活力</small></button>
+            </div>
+          </section>
+
+          <section class="panel-block log-block">
+            <div class="panel-heading"><h2>互动记录</h2><button id="clear-log" class="text-button" type="button">清空</button></div>
+            <ol id="activity-log" class="activity-log"><li class="empty-log">还没有记录，先和泰迪打个招呼吧。</li></ol>
+          </section>
+        </aside>
+      </section>
+
+      <footer><span>素材索引：assets/manifest.json</span><span>本地 Demo · 数据只保存在当前浏览器</span></footer>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

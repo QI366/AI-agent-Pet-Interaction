@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(python -V)",
+      "Bash(python -m pip --version)",
+      "Bash(python -m pip list)",
+      "Bash(where conda *)",
+      "Bash(python -m pip install numpy Pillow)",
+      "Bash(time python image_masking.py mask --json \"C:/Users/zhuoz/AppData/Local/Temp/claude/d--gaoqi-work-AI-agent-Pet-Interaction/fef4b539-59ff-4eaa-90e0-d621ce7828b1/scratchpad/mask_report.json\")",
+      "Bash(python image_masking.py mirror --auto)",
+      "Bash(python image_masking.py report)",
+      "Bash(python image_masking.py mask --clean)",
+      "Bash(python image_masking.py report --json \"C:/Users/zhuoz/AppData/Local/Temp/claude/d--gaoqi-work-AI-agent-Pet-Interaction/fef4b539-59ff-4eaa-90e0-d621ce7828b1/scratchpad/qa.json\")",
+      "Bash(python -m py_compile image_masking.py)",
+      "Bash(python image_masking.py --help)",
+      "Bash(python image_masking.py mirror --src ../assets/characters/poodle/pose/poodle_pose_yR90_pC00.png --dst \"C:/Users/zhuoz/AppData/Local/Temp/claude/d--gaoqi-work-AI-agent-Pet-Interaction/fef4b539-59ff-4eaa-90e0-d621ce7828b1/scratchpad/t.png\" --recenter)",
+      "Bash(time python image_masking.py align --dry-run --debug-dir __TRACKED_VAR__/dbg)"
+    ]
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "poodle_pose_yC00_pA45.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      70,
+      43,
+      953,
+      981
+    ],
+    "centerX": 511,
+    "alphaCoverage": 0.5061,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 18493
+  },
+  "poodle_pose_yC00_pB45.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      84,
+      40,
+      949,
+      1022
+    ],
+    "centerX": 516,
+    "alphaCoverage": 0.4581,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 18285
+  },
+  "poodle_pose_yC00_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      88,
+      38,
+      945,
+      1022
+    ],
+    "centerX": 516,
+    "alphaCoverage": 0.4599,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 19104
+  },
+  "poodle_pose_yL15_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      95,
+      58,
+      929,
+      1022
+    ],
+    "centerX": 512,
+    "alphaCoverage": 0.4813,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 18281
+  },
+  "poodle_pose_yL30_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      147,
+      42,
+      940,
+      1022
+    ],
+    "centerX": 543,
+    "alphaCoverage": 0.4759,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 16360
+  },
+  "poodle_pose_yL60_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      124,
+      37,
+      945,
+      1022
+    ],
+    "centerX": 534,
+    "alphaCoverage": 0.462,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 16816
+  },
+  "poodle_pose_yL90_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      135,
+      41,
+      910,
+      1022
+    ],
+    "centerX": 522,
+    "alphaCoverage": 0.5173,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 15929
+  },
+  "poodle_pose_yR15_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      83,
+      38,
+      940,
+      1022
+    ],
+    "centerX": 511,
+    "alphaCoverage": 0.4586,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 18343
+  },
+  "poodle_pose_yR30_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      113,
+      48,
+      896,
+      1022
+    ],
+    "centerX": 504,
+    "alphaCoverage": 0.4895,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 16995
+  },
+  "poodle_pose_yR60_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      104,
+      37,
+      895,
+      1022
+    ],
+    "centerX": 499,
+    "alphaCoverage": 0.4754,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 17290
+  },
+  "poodle_pose_yR90_pC00.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "bbox": [
+      133,
+      41,
+      887,
+      1022
+    ],
+    "centerX": 510,
+    "alphaCoverage": 0.5203,
+    "hasRealAlpha": true,
+    "cornerAlphaMax": 0.0,
+    "softEdgePx": 16000
+  }
+}

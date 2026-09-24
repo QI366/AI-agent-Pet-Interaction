@@ -1,0 +1,272 @@
+{
+  "schemaVersion": "1.0",
+  "project": "狗狗假3D交互项目",
+  "updatedAt": "2026-09-24",
+  "_readme": "唯一素材索引。代码只读本文件，禁止硬编码资源路径。命名规范见 NAMING.md，待补清单见 CHECKLIST.md。status 取值: ready | needs_rework | todo。",
+
+  "canvas": {
+    "width": 1024,
+    "height": 1024,
+    "anchor": {
+      "_note": "对齐基准 = 两眼中点，所有 pose/layer/frame 必须对齐到此坐标，误差 ≤ ±4px",
+      "type": "eye_midpoint",
+      "x": 512,
+      "y": 430,
+      "tolerancePx": 4
+    },
+    "requireAlpha": true,
+    "formats": ["png", "webp"],
+    "scales": ["1x", "0.5x"]
+  },
+
+  "angleGrid": {
+    "yaw": {
+      "yL90": -90, "yL60": -60, "yL30": -30, "yL15": -15,
+      "yC00": 0,
+      "yR15": 15, "yR30": 30, "yR60": 60, "yR90": 90
+    },
+    "pitch": {
+      "pA45": 45,
+      "pC00": 0,
+      "pB45": -45
+    },
+    "_note": "yaw 正值 = 鼻子朝画面右侧（观众视角）。pitch 描述相机高度，正值 = 相机在上方俯视。"
+  },
+
+  "characters": {
+    "poodle": {
+      "displayName": "泰迪",
+      "root": "characters/poodle",
+
+      "generation": {
+        "_note": "角色一致性锚。补任何新图前必须先锁定此块，否则出图不是同一只狗。",
+        "model": "TODO",
+        "seed": "TODO",
+        "lora": "TODO",
+        "referenceImages": ["../../poodle_image_half_body/front_view.png"],
+        "basePrompt": "TODO — 见 CHECKLIST.md §BASE，锁定后逐字复制到此",
+        "negativePrompt": "TODO — 见 CHECKLIST.md §NEGATIVE",
+        "cfg": null,
+        "steps": null,
+        "status": "todo"
+      },
+
+      "persona": {
+        "_note": "喂给 LLM 的角色设定，决定说话风格。与素材表情一一对应。",
+        "name": "泰迪",
+        "age": "2岁",
+        "traits": ["亲人", "好奇", "爱撒娇", "精力充沛"],
+        "speechStyle": "简体中文短句，温柔俏皮，偶尔使用汪和嘿嘿",
+        "catchphrases": ["嘿嘿", "好耶", "汪！"],
+        "systemPromptFile": "prompts/poodle_system.md"
+      },
+
+      "poses": [
+        {
+          "id": "yC00_pC00", "yaw": 0, "pitch": 0, "tier": 1,
+          "file": "imported/db/poses/poodle_pose_yC00_pC00.png",
+          "sourceFile": "poodle_image_half_body/front_view.png",
+          "status": "needs_rework",
+          "issues": ["暗调 vignette + 边缘光，与其余 6 张光照风格不一致", "锚点未对齐"],
+          "measured": { "bbox": [92, 40, 936, 1020], "alphaCoverage": 0.473, "hasRealAlpha": true }
+        },
+        {
+          "id": "yL30_pC00", "yaw": -30, "pitch": 0, "tier": 1,
+          "file": "imported/db/poses/poodle_pose_yL30_pC00.png",
+          "sourceFile": "poodle_image_half_body/30_left.png",
+          "status": "needs_rework",
+          "issues": ["白底烤死，无 alpha", "锚点未对齐（中心 X 偏右 20px）"],
+          "measured": { "bbox": [128, 36, 936, 1020], "alphaCoverage": 0.0, "hasRealAlpha": false }
+        },
+        {
+          "id": "yR30_pC00", "yaw": 30, "pitch": 0, "tier": 1,
+          "file": "imported/db/poses/poodle_pose_yR30_pC00.png",
+          "sourceFile": "poodle_image_half_body/30_right.png",
+          "status": "needs_rework",
+          "issues": ["白底烤死，无 alpha", "锚点未对齐"],
+          "measured": { "bbox": [116, 40, 892, 1020], "alphaCoverage": 0.0, "hasRealAlpha": false }
+        },
+        {
+          "id": "yL90_pC00", "yaw": -90, "pitch": 0, "tier": 1,
+          "file": "imported/db/poses/poodle_pose_yL90_pC00.png",
+          "sourceFile": "poodle_image_half_body/90_left.png",
+          "status": "needs_rework",
+          "issues": ["白底烤死，无 alpha", "锚点未对齐"],
+          "measured": { "bbox": [136, 40, 908, 1020], "alphaCoverage": 0.0, "hasRealAlpha": false }
+        },
+        {
+          "id": "yR90_pC00", "yaw": 90, "pitch": 0, "tier": 1,
+          "file": "imported/db/poses/poodle_pose_yR90_pC00.png",
+          "sourceFile": "poodle_image_half_body/90_right.png",
+          "status": "needs_rework",
+          "issues": ["白底烤死，无 alpha", "锚点未对齐"],
+          "measured": { "bbox": [116, 40, 888, 1020], "alphaCoverage": 0.0, "hasRealAlpha": false }
+        },
+        { "id": "yL60_pC00", "yaw": -60, "pitch": 0, "tier": 1, "file": "imported/db/poses/poodle_pose_yL60_pC00.png", "sourceFile": "示例图/db/poodle_pose_yL60_pC00.png", "status": "needs_rework", "issues": ["示例图已导入，需复核锚点"] },
+        { "id": "yR60_pC00", "yaw": 60,  "pitch": 0, "tier": 1, "file": "imported/db/poses/poodle_pose_yR60_pC00.png", "sourceFile": "示例图/db/poodle_pose_yR60_pC00.png", "status": "needs_rework", "issues": ["示例图已导入，需复核锚点"] },
+        { "id": "yL15_pC00", "yaw": -15, "pitch": 0, "tier": 1, "file": "imported/db/poses/poodle_pose_yL15_pC00.png", "sourceFile": "示例图/db/poodle_pose_yL15_pC00.png", "status": "needs_rework", "issues": ["示例图已导入，需复核锚点"] },
+        { "id": "yR15_pC00", "yaw": 15,  "pitch": 0, "tier": 1, "file": "imported/db/poses/poodle_pose_yR15_pC00.png", "sourceFile": "示例图/db/poodle_pose_yR15_pC00.png", "status": "needs_rework", "issues": ["示例图已导入，需复核锚点"] },
+
+        {
+          "id": "yC00_pA45", "yaw": 0, "pitch": 45, "tier": 2,
+          "file": "imported/db/poses/poodle_pose_yC00_pA45.png",
+          "sourceFile": "poodle_image_half_body/45_above.png",
+          "status": "needs_rework",
+          "issues": ["白底烤死，无 alpha", "取景比其余张更远，主体高度 908 vs 980"],
+          "measured": { "bbox": [84, 60, 944, 968], "alphaCoverage": 0.0, "hasRealAlpha": false }
+        },
+        {
+          "id": "yC00_pB45", "yaw": 0, "pitch": -45, "tier": 2,
+          "file": "imported/db/poses/poodle_pose_yC00_pB45.png",
+          "sourceFile": "poodle_image_half_body/45_upward.png",
+          "status": "needs_rework",
+          "issues": ["白底烤死，无 alpha", "pitch 语义待确认：相机仰视 or 狗抬头"],
+          "measured": { "bbox": [92, 40, 940, 1020], "alphaCoverage": 0.0, "hasRealAlpha": false }
+        },
+        { "id": "yL90_pA45", "yaw": -90, "pitch": 45,  "tier": 2, "file": null, "status": "todo" },
+        { "id": "yL30_pA45", "yaw": -30, "pitch": 45,  "tier": 2, "file": null, "status": "todo" },
+        { "id": "yR30_pA45", "yaw": 30,  "pitch": 45,  "tier": 2, "file": null, "status": "todo" },
+        { "id": "yR90_pA45", "yaw": 90,  "pitch": 45,  "tier": 2, "file": null, "status": "todo" },
+        { "id": "yL90_pB45", "yaw": -90, "pitch": -45, "tier": 2, "file": null, "status": "todo" },
+        { "id": "yL30_pB45", "yaw": -30, "pitch": -45, "tier": 2, "file": null, "status": "todo" },
+        { "id": "yR30_pB45", "yaw": 30,  "pitch": -45, "tier": 2, "file": null, "status": "todo" },
+        { "id": "yR90_pB45", "yaw": 90,  "pitch": -45, "tier": 2, "file": null, "status": "todo" }
+      ],
+
+      "layers": {
+        "_note": "假 3D 核心。只有拆层后才能做视线跟随、口型同步、表情复用。优先拆 3 个主 pose。",
+        "order": ["ear_l", "body", "head", "eye_l_white", "eye_r_white", "iris_l", "iris_r", "lid_l", "lid_r", "brow_l", "brow_r", "nose", "mouth", "tongue", "ear_r"],
+        "sets": [
+          { "pose": "yC00_pC00", "dir": "imported/db/layers/yC00_pC00", "parts": ["body", "head", "ear_l", "ear_r"], "files": {
+            "body": "imported/db/layers/yC00_pC00/poodle_layer_yC00_pC00_body.png",
+            "head": "imported/db/layers/yC00_pC00/poodle_layer_yC00_pC00_head.png",
+            "ear_l": "imported/db/layers/yC00_pC00/poodle_layer_yC00_pC00_ear_l.png",
+            "ear_r": "imported/db/layers/yC00_pC00/poodle_layer_yC00_pC00_ear_r.png"
+          }, "status": "needs_rework", "priority": "P0" },
+          { "pose": "yL30_pC00", "dir": "characters/poodle/layers/yL30_pC00", "parts": [], "status": "todo", "priority": "P1" },
+          { "pose": "yR30_pC00", "dir": "characters/poodle/layers/yR30_pC00", "parts": [], "status": "todo", "priority": "P1" }
+        ],
+        "irisRange": {
+          "_note": "瞳孔层可移动范围（相对静止位，px），用于视线跟随鼠标",
+          "x": [-18, 18],
+          "y": [-12, 12]
+        }
+      },
+
+      "expressions": [
+        { "id": "neutral",   "status": "ready", "_note": "即现有 pose 图本身", "poses": ["yC00_pC00", "yL30_pC00", "yR30_pC00"] },
+        { "id": "happy", "status": "needs_rework", "poses": ["yC00_pC00", "yL15_pC00", "yR15_pC00"], "files": ["imported/db/expressions/poodle_expr_yC00_pC00_happy.png", "imported/db/expressions/poodle_expr_yL15_pC00_happy.png", "imported/db/expressions/poodle_expr_yR15_pC00_happy.png"], "priority": "P0" },
+        { "id": "excited", "status": "needs_rework", "poses": ["yC00_pC00", "yL15_pC00", "yR15_pC00"], "files": ["imported/db/expressions/poodle_expr_yC00_pC00_excited.png", "imported/db/expressions/poodle_expr_yL15_pC00_excited.png", "imported/db/expressions/poodle_expr_yR15_pC00_excited.png"], "priority": "P0" },
+        { "id": "sad", "status": "needs_rework", "poses": ["yC00_pC00", "yL15_pC00", "yR15_pC00"], "files": ["imported/db/expressions/poodle_expr_yC00_pC00_sad.png", "imported/db/expressions/poodle_expr_yL15_pC00_sad.png", "imported/db/expressions/poodle_expr_yR15_pC00_sad.png"], "priority": "P1" },
+        { "id": "angry", "status": "needs_rework", "poses": ["yC00_pC00", "yL15_pC00", "yR15_pC00"], "files": ["imported/db/expressions/poodle_expr_yC00_pC00_angry.png", "imported/db/expressions/poodle_expr_yL15_pC00_angry.png", "imported/db/expressions/poodle_expr_yR15_pC00_angry.png"], "priority": "P2" },
+        { "id": "sleepy", "status": "needs_rework", "poses": ["yC00_pC00", "yL15_pC00", "yR15_pC00"], "files": ["imported/db/expressions/poodle_expr_yC00_pC00_sleepy.png", "imported/db/expressions/poodle_expr_yL15_pC00_sleepy.png", "imported/db/expressions/poodle_expr_yR15_pC00_sleepy.png"], "priority": "P1" },
+        { "id": "surprised", "status": "needs_rework", "poses": ["yC00_pC00", "yL15_pC00", "yR15_pC00"], "files": ["imported/db/expressions/poodle_expr_yC00_pC00_surprised.png", "imported/db/expressions/poodle_expr_yL15_pC00_surprised.png", "imported/db/expressions/poodle_expr_yR15_pC00_surprised.png"], "priority": "P2" },
+        { "id": "curious", "status": "needs_rework", "poses": ["yC00_pC00", "yL15_pC00", "yR15_pC00"], "files": ["imported/db/expressions/poodle_expr_yC00_pC00_curious.png", "imported/db/expressions/poodle_expr_yL15_pC00_curious.png", "imported/db/expressions/poodle_expr_yR15_pC00_curious.png"], "priority": "P1" }
+      ],
+
+      "clips": [
+        {
+          "id": "blink", "type": "frames", "loop": false, "fps": 24,
+          "frames": ["f00", "f01", "f02", "f01", "f00"],
+          "dir": "characters/poodle/anim/blink",
+          "status": "todo", "priority": "P0",
+          "_note": "f00=睁眼(=pose本体) f01=半闭 f02=全闭。分层后可只出 lid 层，成本降 90%"
+        },
+        {
+          "id": "mouth", "type": "visemes", "loop": false,
+          "visemes": ["closed", "slight", "mid", "wide", "tongue"],
+          "dir": "characters/poodle/anim/mouth",
+          "status": "todo", "priority": "P0",
+          "_note": "AI 说话必需。同样建议只出 mouth 层"
+        },
+        { "id": "ear_flick", "type": "frames", "loop": false, "fps": 18, "frames": ["f00", "f01", "f02", "f00"], "dir": "characters/poodle/anim/ear", "status": "todo", "priority": "P2" },
+        { "id": "breath", "type": "procedural", "status": "todo", "priority": "P2", "_note": "可用代码做 body 层 1.5% 缩放呼吸，无需素材" }
+      ],
+
+      "shadow": [
+        { "id": "yC00", "file": null, "status": "todo", "priority": "P1", "_note": "地面投影，假 3D 的落地感全靠它" }
+      ],
+
+      "hitZones": {
+        "_note": "触摸热区。坐标为画布归一化 (0~1)，与分辨率无关。reaction 指向 emotionMap 的 key。",
+        "zones": [
+          { "id": "head",  "shape": "circle", "cx": null, "cy": null, "r": null, "reaction": "affection", "status": "todo" },
+          { "id": "chin",  "shape": "circle", "cx": null, "cy": null, "r": null, "reaction": "happy",     "status": "todo" },
+          { "id": "ear_l", "shape": "circle", "cx": null, "cy": null, "r": null, "reaction": "curious",   "status": "todo" },
+          { "id": "ear_r", "shape": "circle", "cx": null, "cy": null, "r": null, "reaction": "curious",   "status": "todo" },
+          { "id": "belly", "shape": "rect",   "x": null, "y": null, "w": null, "h": null, "reaction": "excited", "status": "todo" }
+        ]
+      },
+
+      "emotionMap": {
+        "_note": "LLM 输出的 emotion 标签 → 该播什么。这是素材层与 AI 层的唯一接口。",
+        "idle":      { "expression": "neutral",   "clips": ["blink"], "yawBias": 0,   "sfx": null,             "fx": null },
+        "happy":     { "expression": "happy",     "clips": ["blink", "ear_flick"], "yawBias": 0, "sfx": "voice_happy_01", "fx": "fx_heart" },
+        "excited":   { "expression": "excited",   "clips": ["blink"], "yawBias": 0,   "sfx": "voice_excited_01", "fx": "fx_star" },
+        "sad":       { "expression": "sad",       "clips": [],        "yawBias": 0,   "sfx": "voice_whine_01",   "fx": "fx_teardrop" },
+        "angry":     { "expression": "angry",     "clips": [],        "yawBias": 0,   "sfx": "voice_bark_01",    "fx": null },
+        "sleepy":    { "expression": "sleepy",    "clips": [],        "yawBias": 0,   "sfx": null,               "fx": "fx_zzz" },
+        "surprised": { "expression": "surprised", "clips": [],        "yawBias": 0,   "sfx": "voice_yip_01",     "fx": "fx_exclaim" },
+        "curious":   { "expression": "curious",   "clips": ["ear_flick"], "yawBias": -15, "sfx": null,           "fx": "fx_question" },
+        "affection": { "expression": "happy",     "clips": ["blink"], "yawBias": 0,   "sfx": "voice_happy_02",   "fx": "fx_heart" }
+      }
+    }
+  },
+
+  "props":  [
+    { "id": "ball",  "file": "imported/db/props/prop_ball.png", "status": "needs_rework", "priority": "P2" },
+    { "id": "bone",  "file": "imported/db/props/prop_bone.png", "status": "needs_rework", "priority": "P2" },
+    { "id": "bowl",  "file": { "empty": "imported/db/props/prop_bowl_empty.png", "full": "imported/db/props/prop_bowl_full.png" }, "states": ["empty", "full"], "status": "needs_rework", "priority": "P1" },
+    { "id": "brush", "file": null, "status": "todo", "priority": "P3" }
+  ],
+
+  "scenes": [
+    { "id": "livingroom", "layers": ["bg", "fg"], "status": "todo", "priority": "P1" },
+    { "id": "lawn",       "layers": ["bg", "fg"], "status": "todo", "priority": "P2" },
+    { "id": "night",      "layers": ["bg"],       "status": "todo", "priority": "P2" }
+  ],
+
+  "fx": [
+    { "id": "fx_heart",    "frames": 4, "files": ["imported/db/fx/fx_heart_f00.png", "imported/db/fx/fx_heart_f01.png", "imported/db/fx/fx_heart_f02.png", "imported/db/fx/fx_heart_f03.png"], "status": "needs_rework", "priority": "P1" },
+    { "id": "fx_star",     "frames": 4, "status": "todo", "priority": "P1" },
+    { "id": "fx_zzz",      "frames": 3, "status": "todo", "priority": "P1" },
+    { "id": "fx_question", "frames": 2, "status": "todo", "priority": "P2" },
+    { "id": "fx_exclaim",  "frames": 2, "status": "todo", "priority": "P2" },
+    { "id": "fx_teardrop", "frames": 3, "status": "todo", "priority": "P2" }
+  ],
+
+  "ui": [
+    { "id": "bubble_speech", "file": "imported/db/ui/ui_bubble_speech.png", "status": "needs_rework", "priority": "P0", "_note": "AI 对话必需" },
+    { "id": "bar_mood",      "status": "todo", "priority": "P2" },
+    { "id": "bar_hunger",    "status": "todo", "priority": "P2" },
+    { "id": "bar_energy",    "status": "todo", "priority": "P2" },
+    { "id": "btn_feed",      "states": ["normal", "hover", "pressed"], "status": "todo", "priority": "P2" },
+    { "id": "btn_play",      "states": ["normal", "hover", "pressed"], "status": "todo", "priority": "P2" }
+  ],
+
+  "audio": {
+    "voice": [
+      { "id": "voice_happy_01",   "status": "todo", "priority": "P1" },
+      { "id": "voice_happy_02",   "status": "todo", "priority": "P2" },
+      { "id": "voice_excited_01", "status": "todo", "priority": "P1" },
+      { "id": "voice_whine_01",   "status": "todo", "priority": "P1" },
+      { "id": "voice_bark_01",    "status": "todo", "priority": "P2" },
+      { "id": "voice_yip_01",     "status": "todo", "priority": "P2" },
+      { "id": "voice_pant_loop",  "status": "todo", "priority": "P2" }
+    ],
+    "sfx": [
+      { "id": "sfx_click", "status": "todo", "priority": "P2" },
+      { "id": "sfx_pet",   "status": "todo", "priority": "P2" },
+      { "id": "sfx_eat",   "status": "todo", "priority": "P2" }
+    ],
+    "bgm": [
+      { "id": "bgm_daytime", "status": "todo", "priority": "P3" }
+    ],
+    "tts": {
+      "_note": "如果宠物用 TTS 说话，音色需在此定义，与 voice 叫声区分",
+      "provider": "TODO",
+      "voiceId": "TODO",
+      "status": "todo"
+    }
+  }
+}
