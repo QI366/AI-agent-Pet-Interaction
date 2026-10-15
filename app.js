@@ -1,270 +1,243 @@
-const DEFAULT_POSES = [
-  { id: "yC00_pC00", label: "正面", file: "assets/characters/poodle/pose/poodle_pose_yC00_pC00.png" },
-  { id: "yL15_pC00", label: "左 15°", file: "assets/characters/poodle/pose/poodle_pose_yL15_pC00.png" },
-  { id: "yL30_pC00", label: "左 30°", file: "assets/characters/poodle/pose/poodle_pose_yL30_pC00.png" },
-  { id: "yL60_pC00", label: "左 60°", file: "assets/characters/poodle/pose/poodle_pose_yL60_pC00.png" },
-  { id: "yL90_pC00", label: "左侧", file: "assets/characters/poodle/pose/poodle_pose_yL90_pC00.png" },
-  { id: "yR15_pC00", label: "右 15°", file: "assets/characters/poodle/pose/poodle_pose_yR15_pC00.png" },
-  { id: "yR30_pC00", label: "右 30°", file: "assets/characters/poodle/pose/poodle_pose_yR30_pC00.png" },
-  { id: "yR60_pC00", label: "右 60°", file: "assets/characters/poodle/pose/poodle_pose_yR60_pC00.png" },
-  { id: "yR90_pC00", label: "右侧", file: "assets/characters/poodle/pose/poodle_pose_yR90_pC00.png" },
-  { id: "yC00_pA45", label: "俯视", file: "assets/characters/poodle/pose/poodle_pose_yC00_pA45.png" },
-  { id: "yC00_pB45", label: "仰视", file: "assets/characters/poodle/pose/poodle_pose_yC00_pB45.png" },
-];
+import { ACTIONS, actionBlock } from "./shared/domain.js";
 
-const EXPRESSION_LABELS = {
-  neutral: "中性",
-  happy: "开心",
-  excited: "兴奋",
-  sad: "难过",
-  angry: "生气",
-  sleepy: "困困",
-  surprised: "惊讶",
-  curious: "好奇",
-};
-
-const ACTIONS = {
-  pet: { label: "摸摸头", emoji: "🤎", message: "嘿嘿，再摸一会儿嘛。", mood: 8, hunger: 0, energy: 2, fx: "🤎" },
-  feed: { label: "喂食", emoji: "🍖", message: "好香！谢谢你给我准备饭饭。", mood: 5, hunger: 18, energy: 4, fx: "✨" },
-  water: { label: "喝水", emoji: "💧", message: "咕咚咕咚，充满水分啦！", mood: 3, hunger: 0, energy: 12, fx: "💧" },
-  play: { label: "玩玩具", emoji: "🎾", message: "接住！我们再来一次！", mood: 12, hunger: -5, energy: -10, fx: "⭐" },
-};
-
-const state = { mood: 78, hunger: 64, energy: 82, interactions: 0, poseId: "yC00_pC00", expressionId: "neutral", log: [] };
-const catalog = { poses: DEFAULT_POSES, expressions: {}, fxHeart: [], props: {}, layers: {} };
-const STORAGE_KEY = "poodle-pet-state-v1";
 const $ = (id) => document.getElementById(id);
-const petImage = $("pet-image");
-const petWrap = $("pet-wrap");
-const stage = $("stage");
-const speech = $("speech");
+const labels = { neutral: "自然", happy: "开心", excited: "兴奋", sad: "难过", angry: "生气", sleepy: "困困", surprised: "惊讶", curious: "好奇" };
+const poseLabels = { yC00_pC00: "正面", yL15_pC00: "左 15°", yL30_pC00: "左 30°", yL60_pC00: "左 60°", yL90_pC00: "左侧", yR15_pC00: "右 15°", yR30_pC00: "右 30°", yR60_pC00: "右 60°", yR90_pC00: "右侧", yC00_pA45: "俯视", yC00_pB45: "仰视" };
+const modeLabels = { rule: "本地规则演示", llm: "AI 陪伴已连接", fallback: "本次使用本地回退", safety: "照护安全提醒" };
+const catalog = { poses: [], expressions: {}, props: {}, layers: {}, emotions: {} };
+let state = null;
+let busy = false;
+let pending = null;
+let lastTrace = null;
+let visual = { pose: "yC00_pC00", expression: "neutral" };
+let bootMode = "rule";
+let layerVisible = false;
+let visualReady = false;
+let propTimer;
 
-function clamp(value) { return Math.max(0, Math.min(100, value)); }
-
-function saveState() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* 隐私模式下仍可正常游玩 */ }
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
 }
-
-function restoreState() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    if (!saved) return;
-    const numberOr = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
-    state.mood = clamp(numberOr(saved.mood, state.mood));
-    state.hunger = clamp(numberOr(saved.hunger, state.hunger));
-    state.energy = clamp(numberOr(saved.energy, state.energy));
-    state.interactions = Math.max(0, numberOr(saved.interactions, 0));
-    state.poseId = typeof saved.poseId === "string" ? saved.poseId : state.poseId;
-    state.expressionId = typeof saved.expressionId === "string" ? saved.expressionId : state.expressionId;
-    state.log = Array.isArray(saved.log) ? saved.log.slice(-8) : [];
-  } catch { /* 损坏的旧记录不应阻塞启动 */ }
+function notice(text = "") { $("notice").textContent = text; $("notice").hidden = !text; }
+function speech(text) {
+  $("speech").textContent = text;
+  $("speech").classList.remove("pop");
+  requestAnimationFrame(() => $("speech").classList.add("pop"));
 }
-
+function setMode(mode) {
+  $("connection").className = "connection ready";
+  $("connection-label").textContent = modeLabels[mode] || modeLabels.rule;
+  $("mode-note").textContent = mode === "rule" ? "本地规则演示 · 当前未接入大模型 · 不提供医疗诊断" : mode === "fallback" ? "模型暂时不可用，本次已使用规则回复 · 不提供医疗诊断" : "虚拟宠物陪伴 · 不提供医疗诊断";
+}
+function saveVisual() { try { localStorage.setItem("poodle-appearance-v2", JSON.stringify(visual)); } catch { /* Cosmetic persistence is optional. */ } }
+function renderPet() {
+  if (!catalog.poses.length) return;
+  const pose = catalog.poses.find((item) => item.id === visual.pose) || catalog.poses[0];
+  visual.pose = pose.id;
+  const src = catalog.expressions[visual.expression]?.[pose.id] || pose.file;
+  if ($("pet-image").getAttribute("src") !== src) $("pet-image").src = src;
+  $("pet-image").alt = `巧克力色泰迪，${pose.label}，${labels[visual.expression] || "自然"}表情`;
+  $("pose-select").value = pose.id;
+  $("expression-select").value = visual.expression;
+}
 function renderStats() {
-  const rows = [
-    ["心情", state.mood, "", "mood"],
-    ["饱腹", state.hunger, "green", "hunger"],
-    ["活力", state.energy, "blue", "energy"],
-  ];
-  $("stats").innerHTML = rows.map(([label, value, color, key]) => `<div class="stat-line"><span>${label}</span><div class="bar"><i class="${color}" style="width:${value}%"></i></div><strong>${value}</strong></div>`).join("");
-  const mood = state.mood >= 75 ? ["😊", "心情不错"] : state.mood >= 45 ? ["🙂", "平平稳稳"] : ["🥺", "需要安慰"];
-  $("mood-emoji").textContent = mood[0];
-  $("mood-label").textContent = mood[1];
-  $("streak-label").textContent = `今日互动 ${state.interactions} 次`;
+  $("stats").replaceChildren(...[["mood", "心情"], ["hunger", "饱腹"], ["energy", "活力"]].map(([key, label]) => {
+    const row = element("div", "stat-line");
+    const title = element("div", "stat-label");
+    title.append(element("span", "", label), element("strong", "", state[key]));
+    const bar = element("div", "bar");
+    bar.setAttribute("role", "progressbar");
+    bar.setAttribute("aria-label", label);
+    bar.setAttribute("aria-valuemin", "0"); bar.setAttribute("aria-valuemax", "100"); bar.setAttribute("aria-valuenow", String(state[key]));
+    const fill = element("i", key); fill.style.width = `${state[key]}%`; bar.append(fill);
+    row.append(title, bar); return row;
+  }));
+  const mood = state.energy < 15 ? ["😴", "想休息一会儿"] : state.hunger < 25 ? ["🥺", "肚子咕咕叫"] : state.mood >= 75 ? ["😊", "被陪伴的好心情"] : ["🙂", "想和你待在一起"];
+  $("mood-emoji").textContent = mood[0]; $("mood-label").textContent = mood[1];
+  $("streak-label").textContent = `今日陪伴 ${state.interactions} 次`;
+  $("level").textContent = `Lv. ${state.level}`;
 }
-
+function renderMessages() {
+  const nodes = [];
+  const welcome = element("div", "message welcome");
+  welcome.append(element("span", "message-label", "泰迪 · 你的日常搭子"), element("p", "bubble", "汪，终于等到你啦！\n告诉我你的名字，或者说“陪我玩球”，我们就从这里开始。"));
+  nodes.push(welcome);
+  for (const item of state.messages) {
+    const row = element("div", `message ${item.role === "user" ? "user" : "assistant"}`);
+    row.append(element("span", "message-label", item.role === "user" ? "你" : "泰迪"), element("p", "bubble", item.content)); nodes.push(row);
+  }
+  $("messages").replaceChildren(...nodes);
+  $("messages").scrollTop = $("messages").scrollHeight;
+}
+function renderMemory() {
+  const memoryLabels = { ownerName: "你的名字", favoriteToy: "喜欢的玩具" };
+  const entries = Object.entries(state.memory);
+  $("memory-list").replaceChildren(...(entries.length ? entries.map(([key, value]) => {
+    const chip = element("span", "memory-chip"); chip.append(element("small", "", memoryLabels[key] || key), element("span", "", value)); return chip;
+  }) : [element("p", "muted", "告诉我你的名字或喜欢的玩具，我们慢慢熟悉。") ]));
+}
 function renderLog() {
-  const log = $("activity-log");
-  if (!state.log.length) { log.innerHTML = '<li class="empty-log">还没有记录，先和泰迪打个招呼吧。</li>'; return; }
-  log.innerHTML = state.log.slice(-8).map((entry) => `<li><span>${entry.emoji} ${entry.label}</span><time>${entry.time}</time></li>`).join("");
+  const entries = state.log.slice(-5).reverse();
+  $("activity-log").replaceChildren(...(entries.length ? entries.map((entry) => {
+    const row = element("li"); const time = element("time", "", new Date(entry.at).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Shanghai" }));
+    time.dateTime = new Date(entry.at).toISOString();
+    row.append(element("span", "", `${entry.emoji} ${entry.label}${entry.source === "agent" ? " · 聊天互动" : ""}`), time); return row;
+  }) : [element("li", "muted", "还没有足迹，先摸摸泰迪的头吧。") ]));
 }
-
-function setSpeech(text) {
-  speech.textContent = text;
-  speech.classList.remove("pop");
-  void speech.offsetWidth;
-  speech.classList.add("pop");
+function renderTrace(trace) {
+  lastTrace = trace;
+  if (!trace) {
+    $("trace-summary").textContent = "聊一句，看看泰迪如何回应";
+    $("trace-content").replaceChildren(element("p", "muted", "这里展示决策阶段、工具结果和耗时，不展示模型内部思维。")); return;
+  }
+  $("trace-summary").textContent = `${modeLabels[trace.mode]} · ${trace.toolCalls} 次工具 · ${trace.durationMs} ms`;
+  const stageLabels = { policy: "授权检查", context: "读取记忆", tool: "工具执行", fallback: "规则回退", reply: "完成回复" };
+  const rows = trace.steps.map((step) => {
+    const row = element("div", "trace-step");
+    const detail = step.stage === "tool" ? `${step.name}(${JSON.stringify(step.arguments)})\n${step.result.ok ? "成功" : "拒绝"} · ${step.status === "discarded" ? "已丢弃，未提交" : "已提交"}${step.result.reason ? ` · ${step.result.reason}` : ""}` : step.detail;
+    row.append(element("strong", "", stageLabels[step.stage] || step.stage), element(step.stage === "tool" ? "code" : "span", "", detail)); return row;
+  });
+  rows.push(element("p", "trace-meta", `追踪编号 ${trace.id} · 模型请求 ${trace.modelCalls} 次 · 已报告 tokens ${trace.totalTokens}${trace.fallbackReason ? ` · 回退原因 ${trace.fallbackReason}` : ""}`));
+  $("trace-content").replaceChildren(...rows);
 }
-
-function burst(emoji) {
-  const item = document.createElement("span");
-  item.className = "spark";
-  item.textContent = emoji;
-  item.style.left = `${38 + Math.random() * 24}%`;
-  item.style.top = `${30 + Math.random() * 25}%`;
-  $("sparkles").append(item);
-  window.setTimeout(() => item.remove(), 950);
+function renderState(next, { messages = true } = {}) {
+  state = next; renderStats(); renderMemory(); renderLog(); if (messages) renderMessages(); setBusy(busy);
 }
-
-function burstHeartFx() {
-  if (!catalog.fxHeart.length) { burst("🤎"); return; }
-  const item = document.createElement("img");
-  item.className = "spark fx-spark";
-  item.alt = "";
-  item.src = assetUrl(catalog.fxHeart[0]);
-  item.style.left = "35%";
-  item.style.top = "25%";
-  $("sparkles").append(item);
-  let frame = 0;
-  const timer = window.setInterval(() => {
-    frame += 1;
-    if (frame >= catalog.fxHeart.length) { window.clearInterval(timer); item.remove(); return; }
-    item.src = assetUrl(catalog.fxHeart[frame]);
-  }, 150);
+function setBusy(value) {
+  busy = value;
+  const locked = busy || !state || Boolean(pending);
+  for (const button of document.querySelectorAll("#actions button, #suggestions button, #send-button, #reset-button, #forget-button, #clear-log")) button.disabled = locked;
+  $("chat-input").disabled = locked;
+  $("chat-status").textContent = busy ? "正在认真回应…" : pending ? "等待重试" : state ? "在你身边" : "准备中";
+  $("chat-form").setAttribute("aria-busy", String(busy));
+  $("retry-button").hidden = !pending || busy;
+  if (state) for (const button of document.querySelectorAll("#actions button")) {
+    const reason = actionBlock(state, button.dataset.action);
+    button.title = reason || ACTIONS[button.dataset.action].label;
+    // Keep blocked actions clickable so the pet can explain the reason.
+  }
 }
-
+function showAction(action) {
+  clearTimeout(propTimer);
+  const prop = $("prop-image");
+  const file = action === "feed" ? catalog.props.bowl?.full : action === "play" ? catalog.props.ball : null;
+  prop.classList.toggle("visible", Boolean(file));
+  if (file) prop.src = file; else prop.removeAttribute("src");
+  if (action) {
+    const spark = element("span", "spark", ACTIONS[action]?.emoji || "✦");
+    spark.style.left = `${40 + Math.random() * 20}%`; spark.style.top = "35%"; $("sparkles").append(spark);
+    setTimeout(() => spark.remove(), 950);
+    propTimer = setTimeout(() => { prop.classList.remove("visible"); }, 5000);
+  }
+}
+async function request(path, body) {
+  const response = await fetch(path, { method: body ? "POST" : "GET", headers: body ? { "Content-Type": "application/json" } : {},
+    ...(body ? { body: JSON.stringify(body) } : {}), signal: AbortSignal.timeout(40_000) });
+  let data;
+  try { data = await response.json(); } catch { throw new Error("服务返回异常，请确认使用 npm start 启动项目。"); }
+  if (!response.ok) throw Object.assign(new Error(data.error?.message || "服务暂时不可用"), { status: response.status, code: data.error?.code, state: data.state });
+  return data;
+}
+async function mutate(path, payload = {}, retry = false) {
+  if ((busy || pending) && !retry) return;
+  const task = retry ? pending : { path, body: { ...payload, requestId: crypto.randomUUID(), expectedVersion: state.version } };
+  if (!task) return;
+  pending = task; setBusy(true); notice();
+  try {
+    const result = await request(task.path, task.body);
+    pending = null;
+    renderState(result.state);
+    speech(result.reply);
+    visual.expression = catalog.emotions[result.emotion]?.expression || "neutral";
+    renderPet(); showAction(result.action);
+    if (result.trace) { renderTrace(result.trace); setMode(result.trace.mode); }
+    if (task.path === "/api/chat") { $("chat-input").value = ""; $("input-count").textContent = "Enter 发送 · Shift + Enter 换行"; }
+    if (["/api/reset", "/api/forget"].includes(task.path)) { renderTrace(null); setMode(bootMode); }
+    if (task.path === "/api/reset") {
+      visual = { pose: "yC00_pC00", expression: "neutral" }; saveVisual(); renderPet();
+      layerVisible = false; $("layer-preview").classList.remove("visible"); $("layer-toggle").setAttribute("aria-pressed", "false"); $("layer-preview").setAttribute("aria-hidden", "true");
+    }
+  } catch (error) {
+    if (error.state) renderState(error.state);
+    if (error.status && error.status < 500) pending = null;
+    notice(error.status ? error.message : "暂时没收到结果。可点“重新获取上次结果”，同一请求不会重复执行。");
+    if (error.status === 401) notice("会话已失效，请刷新页面后继续。");
+  } finally { setBusy(false); }
+}
+function confirmClear(title, description, action) {
+  $("confirm-title").textContent = title; $("confirm-description").textContent = description;
+  const dialog = $("confirm-dialog"); dialog.returnValue = "cancel";
+  dialog.addEventListener("close", () => { if (dialog.returnValue === "confirm") action(); }, { once: true }); dialog.showModal();
+}
 function assetUrl(file) {
-  if (!file) return "";
+  if (typeof file !== "string" || !/^[\w/-]+\.(?:png|webp)$/.test(file) || file.split("/").includes("..")) return "";
   return file.startsWith("assets/") ? file : `assets/${file}`;
 }
-
-function performAction(id) {
-  const action = ACTIONS[id];
-  if (!action) return;
-  state.mood = clamp(state.mood + action.mood);
-  state.hunger = clamp(state.hunger + action.hunger);
-  state.energy = clamp(state.energy + action.energy);
-  state.interactions += 1;
-  if (id === "play") state.expressionId = "excited";
-  if (id === "pet" || id === "feed") state.expressionId = "happy";
-  state.log.push({ label: action.label, emoji: action.emoji, time: new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" }) });
-  saveState();
-  setSpeech(action.message);
-  if (id === "feed") showProp(catalog.props.bowl?.full || catalog.props.bowl?.empty);
-  else if (id === "play") showProp(catalog.props.ball);
-  else hideProp();
-  if (id === "pet" || id === "feed") burstHeartFx(); else burst(action.fx);
-  renderPet();
-  renderStats();
-  renderLog();
-}
-
-function yawForPose(id) {
-  const match = id.match(/y([LRC])(\d{2})/);
-  if (!match) return 0;
-  return (match[1] === "L" ? -1 : match[1] === "R" ? 1 : 0) * Number(match[2]);
-}
-
-function renderPet() {
-  const expression = catalog.expressions[state.expressionId];
-  const expressionFile = expression?.[state.poseId];
-  const pose = catalog.poses.find((item) => item.id === state.poseId) || DEFAULT_POSES[0];
-  petImage.src = expressionFile || pose.file;
-  petImage.alt = `泰迪犬，${pose.label}，${EXPRESSION_LABELS[state.expressionId] || "中性"}表情`;
-  $("pose-select").value = pose.id;
-  $("expression-select").value = state.expressionId;
-}
-
-function loadPose(pose) {
-  state.poseId = pose.id;
-  renderPet();
-}
-
-function showProp(file) {
-  const image = $("prop-image");
-  if (!file) { hideProp(); return; }
-  image.src = assetUrl(file);
-  image.classList.add("visible");
-}
-
-function hideProp() {
-  const image = $("prop-image");
-  image.classList.remove("visible");
-  image.removeAttribute("src");
-}
-
-function renderLayers() {
-  const preview = $("layer-preview");
-  Object.entries(catalog.layers).forEach(([part, file]) => {
-    const image = preview.querySelector(`[data-layer="${part}"]`);
-    if (image) image.src = assetUrl(file);
-  });
-}
-
-function reset() {
-  Object.assign(state, { mood: 78, hunger: 64, energy: 82, interactions: 0, expressionId: "neutral", log: [] });
-  saveState();
-  hideProp();
-  $("layer-preview").classList.remove("visible");
-  $("layer-preview").setAttribute("aria-hidden", "true");
-  $("layer-toggle").setAttribute("aria-pressed", "false");
-  loadPose(catalog.poses[0] || DEFAULT_POSES[0]);
-  setSpeech("嗨！今天也要一起玩呀。");
-  renderStats();
-  renderLog();
-}
-
-async function boot() {
-  let poses = DEFAULT_POSES;
-  try {
-    const response = await fetch("assets/manifest.json");
-    if (response.ok) {
-      const manifest = await response.json();
-      const manifestPoses = manifest?.characters?.poodle?.poses?.filter((pose) => pose.file && pose.status !== "todo");
-      if (manifestPoses?.length) {
-        // manifest paths are rooted at assets/; normalize them for the web page root.
-        const indexed = manifestPoses.map((pose) => ({
-          ...pose,
-          label: pose.id,
-          file: assetUrl(pose.file),
-        }));
-        const known = new Set(indexed.map((pose) => pose.id));
-        // Keep generated files that are already present on disk even when the
-        // checklist has not been updated with their final manifest entry yet.
-        poses = [...indexed, ...DEFAULT_POSES.filter((pose) => !known.has(pose.id))];
-      }
-      catalog.poses = poses;
-      const expressions = manifest?.characters?.poodle?.expressions || [];
-      expressions.forEach((entry) => {
-        if (!entry.files?.length || !entry.poses?.length) return;
-        catalog.expressions[entry.id] = {};
-        entry.poses.forEach((poseId, index) => { catalog.expressions[entry.id][poseId] = assetUrl(entry.files[index]); });
-      });
-      const heart = manifest?.fx?.find((entry) => entry.id === "fx_heart");
-      catalog.fxHeart = heart?.files || [];
-      const props = manifest?.props || [];
-      props.forEach((entry) => { catalog.props[entry.id] = typeof entry.file === "string" ? entry.file : entry.file || null; });
-      catalog.layers = manifest?.characters?.poodle?.layers?.sets?.find((set) => set.pose === "yC00_pC00")?.files || {};
-    }
-    $("connection").classList.add("ready");
-    $("connection").innerHTML = '<span class="status-dot"></span>素材已就绪';
-  } catch {
-    $("connection").innerHTML = '<span class="status-dot"></span>使用本地素材';
+async function loadCatalog() {
+  const response = await fetch("assets/manifest.json");
+  if (!response.ok) throw new Error("素材索引加载失败");
+  const manifest = await response.json(); const pet = manifest.characters.poodle;
+  catalog.poses = pet.poses.filter((p) => p.file && p.status !== "todo" && assetUrl(p.file)).map((p) => ({ id: p.id, file: assetUrl(p.file), label: poseLabels[p.id] || p.id }));
+  catalog.poses.sort((a, b) => Object.keys(poseLabels).indexOf(a.id) - Object.keys(poseLabels).indexOf(b.id));
+  if (!catalog.poses.length) throw new Error("没有可展示的宠物素材");
+  for (const expression of pet.expressions) {
+    if (expression.status === "todo" || !expression.files) continue;
+    catalog.expressions[expression.id] = {};
+    expression.poses.forEach((pose, index) => { const file = assetUrl(expression.files[index]); if (file) catalog.expressions[expression.id][pose] = file; });
   }
-  const select = $("pose-select");
-  catalog.poses = poses;
-  select.innerHTML = poses.map((pose) => `<option value="${pose.id}">${pose.label}</option>`).join("");
-  select.addEventListener("change", () => { loadPose(poses.find((pose) => pose.id === select.value) || poses[0]); saveState(); });
-  const expressionSelect = $("expression-select");
-  expressionSelect.innerHTML = Object.entries(EXPRESSION_LABELS).map(([id, label]) => `<option value="${id}">${label}</option>`).join("");
-  expressionSelect.addEventListener("change", () => { state.expressionId = expressionSelect.value; renderPet(); saveState(); });
-  $("actions").addEventListener("click", (event) => {
-    const button = event.target.closest("button[data-action]");
-    if (button) performAction(button.dataset.action);
-  });
-  $("clear-log").addEventListener("click", () => { state.log = []; saveState(); renderLog(); setSpeech("记录清空啦，我们重新开始吧。"); });
-  $("reset-button").addEventListener("click", reset);
-  $("layer-toggle").addEventListener("click", () => {
-    const button = $("layer-toggle");
-    const visible = button.getAttribute("aria-pressed") !== "true";
-    button.setAttribute("aria-pressed", String(visible));
-    $("layer-preview").classList.toggle("visible", visible);
-    $("layer-preview").setAttribute("aria-hidden", String(!visible));
-    setSpeech(visible ? "这是当前导入的分层叠加预览。" : "已恢复整图预览。");
-  });
-  stage.addEventListener("pointermove", (event) => {
-    const rect = stage.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - .5;
-    const y = (event.clientY - rect.top) / rect.height - .5;
-    const yaw = yawForPose(state.poseId);
-    petWrap.style.transform = `translate(${x * 7}px, ${y * 4}px) rotate(${x * 1.2}deg)`;
-  });
-  stage.addEventListener("pointerleave", () => { petWrap.style.transform = ""; });
-  restoreState();
-  renderLayers();
-  loadPose(poses.find((pose) => pose.id === state.poseId) || poses[0]);
-  renderStats();
-  renderLog();
+  for (const prop of manifest.props) catalog.props[prop.id] = typeof prop.file === "string" ? assetUrl(prop.file) : Object.fromEntries(Object.entries(prop.file || {}).map(([key, file]) => [key, assetUrl(file)]));
+  catalog.emotions = pet.emotionMap;
+  catalog.layers = pet.layers.sets.find((set) => set.pose === "yC00_pC00")?.files || {};
+  $("pose-select").replaceChildren(...catalog.poses.map((p) => { const option = element("option", "", p.label); option.value = p.id; return option; }));
+  $("expression-select").replaceChildren(...Object.entries(labels).map(([id, label]) => { const option = element("option", "", label); option.value = id; return option; }));
+  $("layer-preview").replaceChildren(...(pet.layers.order || Object.keys(catalog.layers)).filter((part) => catalog.layers[part]).map((part) => { const image = element("img"); image.src = assetUrl(catalog.layers[part]); image.alt = ""; return image; }));
+  try { const saved = JSON.parse(localStorage.getItem("poodle-appearance-v2")); if (saved && labels[saved.expression] && catalog.poses.some((p) => p.id === saved.pose)) visual = saved; } catch { /* Invalid preferences are ignored. */ }
+  renderPet(); visualReady = true;
 }
-
-boot();
+$("pet-image").addEventListener("error", () => {
+  const fallback = catalog.poses.find((p) => p.id === visual.pose)?.file || catalog.poses[0]?.file;
+  if (fallback && $("pet-image").getAttribute("src") !== fallback) $("pet-image").src = fallback;
+  else { $("pet-image").removeAttribute("src"); $("pet-image").alt = "泰迪的形象暂时加载失败，仍然可以聊天。"; }
+});
+$("pose-select").addEventListener("change", (e) => { visual.pose = e.target.value; renderPet(); saveVisual(); });
+$("expression-select").addEventListener("change", (e) => { visual.expression = e.target.value; renderPet(); saveVisual(); });
+$("layer-toggle").addEventListener("click", () => {
+  layerVisible = !layerVisible; $("layer-preview").classList.toggle("visible", layerVisible); $("layer-preview").setAttribute("aria-hidden", String(!layerVisible)); $("layer-toggle").setAttribute("aria-pressed", String(layerVisible));
+  speech(layerVisible ? "这是还在验收的分层素材预览。" : "回到我的小客厅啦。 ");
+});
+$("actions").addEventListener("click", (e) => { const button = e.target.closest("button[data-action]"); if (button) void mutate("/api/actions", { action: button.dataset.action }); });
+$("chat-form").addEventListener("submit", (e) => { e.preventDefault(); const message = $("chat-input").value.trim(); if (message) void mutate("/api/chat", { message }); });
+$("chat-input").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("chat-form").requestSubmit(); } });
+$("chat-input").addEventListener("input", () => { $("input-count").textContent = `${$("chat-input").value.length} / 500 · Enter 发送`; });
+$("suggestions").addEventListener("click", (e) => { const button = e.target.closest("button"); if (button) { $("chat-input").value = button.textContent; void mutate("/api/chat", { message: button.textContent }); } });
+$("retry-button").addEventListener("click", () => void mutate(null, {}, true));
+$("forget-button").addEventListener("click", () => confirmClear("忘记这些小事？", "将清除名字、玩具偏好和近期聊天，宠物状态与陪伴足迹会保留。", () => void mutate("/api/forget")));
+$("reset-button").addEventListener("click", () => confirmClear("重新开始陪伴？", "将清除宠物状态、等级、偏好、聊天和全部互动记录。", () => void mutate("/api/reset")));
+$("clear-log").addEventListener("click", () => void mutate("/api/log/clear"));
+$("stage").addEventListener("pointermove", (e) => {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || e.pointerType === "touch") return;
+  const rect = $("stage").getBoundingClientRect(); const x = (e.clientX - rect.left) / rect.width - .5; const y = (e.clientY - rect.top) / rect.height - .5;
+  $("pet-wrap").style.transform = `translate(${x * 8}px,${y * 5}px) rotate(${x}deg)`;
+});
+$("stage").addEventListener("pointerleave", () => { $("pet-wrap").style.transform = ""; });
+$("day-label").prepend(document.createTextNode(new Intl.DateTimeFormat("zh-CN", { month: "long", day: "numeric", weekday: "long", timeZone: "Asia/Shanghai" }).format(new Date())));
+async function refresh() {
+  if (busy || pending || document.hidden || !state) return;
+  try { const data = await request("/api/session"); if (!busy && !pending && data.state.version >= state.version) renderState(data.state, { messages: data.state.version !== state.version }); } catch { /* The next user operation reports connectivity errors. */ }
+}
+async function boot() {
+  const results = await Promise.allSettled([loadCatalog(), request("/api/session")]);
+  if (results[0].status === "rejected") notice("部分形象素材暂时不可用，聊天和照护仍然可以继续。");
+  if (results[1].status === "fulfilled") {
+    bootMode = results[1].value.mode; renderState(results[1].value.state); setMode(bootMode);
+  } else {
+    $("connection").className = "connection error"; $("connection-label").textContent = "陪伴服务未连接";
+    notice("请在项目目录执行 npm start，再访问终端显示的地址。");
+  }
+}
+void boot();
+setInterval(() => void refresh(), 30_000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) void refresh(); });

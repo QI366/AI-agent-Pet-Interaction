@@ -1,0 +1,15 @@
+{
+  "name": "poodle-companion-agent",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "A stateful virtual pet with bounded tool calling and reproducible evaluation",
+  "engines": { "node": ">=22.14" },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server/index.js",
+    "dev": "node --watch --env-file-if-exists=.env server/index.js",
+    "test": "node --test",
+    "eval": "node scripts/evaluate.js",
+    "check:assets": "node scripts/check-assets.js"
+  }
+}

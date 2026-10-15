@@ -3,84 +3,64 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f5efe9" />
-    <title>泰迪的日常</title>
+    <meta name="theme-color" content="#244d43" />
+    <meta name="description" content="一只记得你、听得懂你、也有自己小情绪的虚拟泰迪。" />
+    <title>泰迪的日常 · AI 陪伴宠物</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">AI PET INTERACTION</p>
-          <h1>泰迪的日常</h1>
-        </div>
-        <div class="connection" id="connection" aria-live="polite">
-          <span class="status-dot"></span>素材载入中
-        </div>
+        <a class="brand" href="/" aria-label="泰迪的日常首页"><span class="brand-mark" aria-hidden="true">♧</span><span>泰迪的日常<small>POODLE COMPANION</small></span></a>
+        <div class="connection" id="connection" role="status"><span class="status-dot"></span><span id="connection-label">正在准备见面…</span></div>
       </header>
-
-      <section class="game-layout" aria-label="宠物互动区">
-        <section class="stage-card">
-          <div class="stage-toolbar">
-            <label for="pose-select">视角</label>
-            <select id="pose-select" aria-label="选择狗狗视角"></select>
-            <label for="expression-select">表情</label>
-            <select id="expression-select" aria-label="选择狗狗表情"></select>
-            <button class="tool-button" id="layer-toggle" type="button" aria-pressed="false">分层预览</button>
-            <button class="icon-button" id="reset-button" type="button" title="恢复初始状态">↺</button>
-          </div>
+      <section class="intro">
+        <div><p class="eyebrow">A LITTLE FRIEND, A LITTLE EVERYDAY</p><h1>今天，也有我陪你<span>。</span></h1><p class="intro-copy">聊聊天，摸摸头，把平凡的一天过得柔软一点。</p></div>
+        <div class="day-note"><span aria-hidden="true">☀</span><div id="day-label">美好的日常<small>每一次陪伴，都算数。</small></div></div>
+      </section>
+      <div id="notice" class="notice" role="alert" hidden></div>
+      <section class="workspace" aria-label="宠物陪伴空间">
+        <section class="pet-card card">
+          <div class="card-top"><div><span class="live-dot"></span><strong>泰迪的小客厅</strong></div><span class="quiet-label">巧克力色 · 2 岁 · 爱撒娇</span></div>
           <div class="stage" id="stage">
-            <div class="sparkles" id="sparkles" aria-hidden="true"></div>
+            <div class="window-shape" aria-hidden="true"></div><span class="stage-doodle" aria-hidden="true">✦</span>
             <div class="speech" id="speech" role="status">嗨！今天也要一起玩呀。</div>
-            <img class="stage-prop" id="prop-image" alt="" aria-hidden="true" />
-            <div class="pet-wrap" id="pet-wrap">
-              <img id="pet-image" alt="一只巧克力色泰迪犬" draggable="false" />
-            </div>
-            <div class="layer-preview" id="layer-preview" aria-hidden="true">
-              <img data-layer="body" alt="" />
-              <img data-layer="head" alt="" />
-              <img data-layer="ear_l" alt="" />
-              <img data-layer="ear_r" alt="" />
-            </div>
             <div class="shadow" aria-hidden="true"></div>
-            <div class="stage-hint">移动鼠标，让泰迪跟着你的视线</div>
+            <div class="pet-wrap" id="pet-wrap"><img id="pet-image" alt="正在准备泰迪的形象" draggable="false" /></div>
+            <img class="stage-prop" id="prop-image" alt="" aria-hidden="true" />
+            <div class="layer-preview" id="layer-preview" aria-hidden="true"></div>
+            <div class="sparkles" id="sparkles" aria-hidden="true"></div>
+            <span class="stage-caption">YOUR DAILY DOSE OF WARMTH</span>
           </div>
-          <div class="mood-row">
-            <span id="mood-emoji" aria-hidden="true">😊</span>
-            <span id="mood-label">心情不错</span>
-            <span class="streak" id="streak-label">今日互动 0 次</span>
+          <div class="pet-summary"><div><span id="mood-emoji" aria-hidden="true">😊</span><strong id="mood-label">心情不错</strong><span class="level" id="level">Lv. 1</span></div><span id="streak-label">今日陪伴 0 次</span></div>
+          <div class="stats" id="stats" aria-label="泰迪当前状态"></div>
+          <div class="actions" id="actions" aria-label="照顾泰迪">
+            <button data-action="pet" type="button" disabled><span>🤎</span>摸摸头</button>
+            <button data-action="feed" type="button" disabled><span>🍖</span>喂食</button>
+            <button data-action="water" type="button" disabled><span>💧</span>喝水</button>
+            <button data-action="play" type="button" disabled><span>🎾</span>玩玩具</button>
+            <button data-action="rest" type="button" disabled><span>🌙</span>休息</button>
           </div>
         </section>
-
-        <aside class="side-panel" aria-label="宠物状态与操作">
-          <section class="panel-block">
-            <div class="panel-heading">
-              <h2>泰迪</h2>
-              <span class="level">Lv. 1</span>
-            </div>
-            <p class="subtitle">巧克力色 · 2 岁 · 爱撒娇</p>
-            <div class="stats" id="stats"></div>
-          </section>
-
-          <section class="panel-block actions-block">
-            <h2>和它互动</h2>
-            <div class="actions" id="actions">
-              <button class="action-button" data-action="pet" type="button"><span>🤎</span><strong>摸摸头</strong><small>增加心情</small></button>
-              <button class="action-button" data-action="feed" type="button"><span>🍖</span><strong>喂食</strong><small>恢复饥饿</small></button>
-              <button class="action-button" data-action="water" type="button"><span>💧</span><strong>喝水</strong><small>恢复活力</small></button>
-              <button class="action-button" data-action="play" type="button"><span>🎾</span><strong>玩玩具</strong><small>消耗活力</small></button>
-            </div>
-          </section>
-
-          <section class="panel-block log-block">
-            <div class="panel-heading"><h2>互动记录</h2><button id="clear-log" class="text-button" type="button">清空</button></div>
-            <ol id="activity-log" class="activity-log"><li class="empty-log">还没有记录，先和泰迪打个招呼吧。</li></ol>
-          </section>
-        </aside>
+        <section class="chat-card card" aria-label="与泰迪聊天">
+          <div class="card-top"><div class="chat-title"><span class="avatar" aria-hidden="true">🐾</span><div><h2>和泰迪说说话</h2><p>你说的，我会认真听。</p></div></div><span class="chat-status" id="chat-status">准备中</span></div>
+          <div class="messages" id="messages" role="log" aria-label="聊天记录" aria-live="polite"></div>
+          <div class="suggestions" id="suggestions" aria-label="试着这样说"><button type="button" disabled>我叫小林</button><button type="button" disabled>陪我玩球</button><button type="button" disabled>你现在状态怎么样</button></div>
+          <form id="chat-form" class="composer"><label class="sr-only" for="chat-input">告诉泰迪你想说的话</label><textarea id="chat-input" rows="2" maxlength="500" placeholder="今天过得怎么样？也可以说“摸摸头”…" required disabled></textarea><div class="composer-bottom"><span id="input-count">Enter 发送 · Shift + Enter 换行</span><button id="send-button" class="primary-button" type="submit" disabled>发送 <span aria-hidden="true">↗</span></button></div></form>
+          <div class="chat-footnote" id="mode-note">虚拟宠物陪伴 · 不提供医疗诊断</div>
+          <button id="retry-button" class="retry-button" type="button" hidden>重新获取上次结果</button>
+        </section>
       </section>
-
-      <footer><span>素材索引：assets/manifest.json</span><span>本地 Demo · 数据只保存在当前浏览器</span></footer>
+      <section class="details-grid">
+        <section class="card memory-card"><div class="section-heading"><h2><span aria-hidden="true">✧</span> 我记得的小事</h2><button id="forget-button" class="text-button" type="button" disabled>忘记这些</button></div><div id="memory-list" class="memory-list"><p class="muted">告诉我你的名字或喜欢的玩具，我们慢慢熟悉。</p></div><p class="section-note">只记住你明确告诉我的偏好，可以随时清除。</p></section>
+        <section class="card activity-card"><div class="section-heading"><h2><span aria-hidden="true">◷</span> 陪伴足迹</h2><button id="clear-log" class="text-button" type="button" disabled>清空</button></div><ol id="activity-log" class="activity-log"></ol></section>
+      </section>
+      <details class="trace-panel card" id="trace-panel"><summary><span>本次执行记录 <small id="trace-summary">聊一句，看看泰迪如何回应</small></span><span aria-hidden="true">⌄</span></summary><div id="trace-content" class="trace-content"><p class="muted">这里展示决策阶段、工具结果和耗时，不展示模型内部思维。</p></div></details>
+      <details class="asset-panel"><summary>外观与演示设置</summary><div class="asset-controls"><label>视角 <select id="pose-select" aria-label="选择狗狗视角"></select></label><label>表情 <select id="expression-select" aria-label="选择狗狗表情"></select></label><button id="layer-toggle" class="secondary-button" type="button" aria-pressed="false">分层素材预览</button><button id="reset-button" class="text-button" type="button" disabled>重置全部陪伴数据</button></div><p class="section-note">分层素材尚在验收；部分视角没有对应表情时显示基础姿态。演示状态按每 5 分钟衰减，离线最多结算 8 小时。</p></details>
+      <footer><span>小小的陪伴，长长的日常。</span><span>POODLE COMPANION · 2026</span></footer>
     </main>
+    <dialog id="confirm-dialog"><form method="dialog"><h2 id="confirm-title">确认清除</h2><p id="confirm-description"></p><div class="dialog-actions"><button class="secondary-button" value="cancel">保留</button><button class="primary-button" value="confirm">确认清除</button></div></form></dialog>
     <script type="module" src="app.js"></script>
   </body>
 </html>
